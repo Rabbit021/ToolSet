@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolSets", "ToolSets\ToolSets.csproj", "{AA179A75-194C-4AB6-9CCA-64B0D03C3BC2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextureProcess", "TextureProcess\TextureProcess.csproj", "{9115428C-3241-4EA9-B2A9-E691B2D6A6FF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolSetsCore", "ToolSetsCore\ToolSetsCore.csproj", "{5C7919CD-A2B5-4073-8E3A-323362FE34A9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChineseNameCoding", "ChineseNameCoding\ChineseNameCoding.csproj", "{F9261108-272C-49A2-928B-7AEC03B51091}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AA179A75-194C-4AB6-9CCA-64B0D03C3BC2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA179A75-194C-4AB6-9CCA-64B0D03C3BC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA179A75-194C-4AB6-9CCA-64B0D03C3BC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA179A75-194C-4AB6-9CCA-64B0D03C3BC2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9115428C-3241-4EA9-B2A9-E691B2D6A6FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9115428C-3241-4EA9-B2A9-E691B2D6A6FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9115428C-3241-4EA9-B2A9-E691B2D6A6FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9115428C-3241-4EA9-B2A9-E691B2D6A6FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C7919CD-A2B5-4073-8E3A-323362FE34A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C7919CD-A2B5-4073-8E3A-323362FE34A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C7919CD-A2B5-4073-8E3A-323362FE34A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C7919CD-A2B5-4073-8E3A-323362FE34A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9261108-272C-49A2-928B-7AEC03B51091}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9261108-272C-49A2-928B-7AEC03B51091}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9261108-272C-49A2-928B-7AEC03B51091}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9261108-272C-49A2-928B-7AEC03B51091}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

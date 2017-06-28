@@ -1,0 +1,6 @@
+/.vs
+Output
+packages
+bin
+obj
+*.sln.DotSettings.user

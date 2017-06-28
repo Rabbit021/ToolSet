@@ -1,0 +1,28 @@
+﻿<toolSetsCore:ToolSetViewBase x:Class="ChineseNameCoding.Views.ChineseNameCodingView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ChineseNameCoding.Views"
+             xmlns:toolSetsCore="clr-namespace:ToolSetsCore;assembly=ToolSetsCore"
+             mc:Ignorable="d" >
+    <Grid Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <StackPanel Height="42" Orientation="Horizontal" Margin="5,0,0,0">
+            <Button Content="编码" Width="90" Margin="0,5" Command="{Binding EncondingCommand}"/>
+            <Button Content="解码" Width="90"  Margin="5,5,0,5" Command="{Binding DecondingCommand}"/>
+            <Button Content="重命名" Width="90"  Margin="5,5,0,5" Command="{Binding RenameCommand}"/>
+        </StackPanel>
+        <DataGrid x:Name="dataGrid" MinWidth="200" MinHeight="80" ItemsSource="{Binding Records}" AutoGenerateColumns="False" FontSize="16" IsReadOnly="True" d:LayoutOverrides="Width, Height" Grid.Row="1" Margin="5" >
+            <DataGrid.Columns>
+                <DataGridTextColumn Width="*" Binding="{Binding FilePath}" Header="文件路径" />
+                <DataGridTextColumn Width="*" Binding="{Binding OriginalName}" Header="原始名称"/>
+                <DataGridTextColumn Width="*" Binding="{Binding EncodingName}" Header="编码名称"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</toolSetsCore:ToolSetViewBase>
+

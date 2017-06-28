@@ -1,0 +1,39 @@
+﻿<toolSetsCore:ToolSetViewBase x:Class="TextureProcess.Views.TextureProcessView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TextureProcess.Views"
+             xmlns:toolSetsCore="clr-namespace:ToolSetsCore;assembly=ToolSetsCore"
+             mc:Ignorable="d" >
+    <toolSetsCore:ToolSetViewBase.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/TextureProcess;component/Simple Styles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </toolSetsCore:ToolSetViewBase.Resources>
+    <GroupBox x:Name="groupBox"  Header="图片处理参数设置" BorderBrush="#FF515151" DataContext="{Binding Settings}" FontSize="16" Margin="10">
+        <StackPanel Margin="10">
+            <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Margin="0,0,0,10">
+                <TextBlock Text="保存路径:" TextWrapping="NoWrap"/>
+                <Border Background="Gray" Padding="1" >
+                    <TextBox  MinWidth="350" Text="{Binding SaveFolder,Mode=TwoWay}" FontSize="16" />
+                </Border>
+            </StackPanel>
+            <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Margin="0,0,0,10">
+                <TextBlock TextWrapping="NoWrap">
+                    <Run Text="图片质量"/>
+                    <Run Text="{Binding Quality,StringFormat=({0}):}"/></TextBlock>
+                <Slider Style="{DynamicResource SimpleSlider}" Value="{Binding Quality}" d:LayoutOverrides="LeftPosition, RightPosition" Maximum="100" SmallChange="1" Width="150"/>
+            </StackPanel>
+            <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Margin="0,0,0,10">
+                <TextBlock TextWrapping="NoWrap">
+                    <Run Text="等比降低分辨率"/>
+                    <Run Text="{Binding Resolution,StringFormat=({0}):}"/></TextBlock>
+                <Slider Style="{DynamicResource SimpleSlider}" Value="{Binding Resolution}" d:LayoutOverrides="LeftPosition, RightPosition" Maximum="100" SmallChange="1" Width="150"/>
+            </StackPanel>
+        </StackPanel>
+    </GroupBox>
+</toolSetsCore:ToolSetViewBase>
+
