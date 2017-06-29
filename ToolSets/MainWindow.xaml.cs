@@ -40,6 +40,23 @@ namespace ToolSets
         {
             PublicDatas.Instance.LoadNewPlugins += Instance_LoadNewPlugins;
             PublicDatas.Instance.Aggregator.GetEvent<LogEvent>().Subscribe(LogMessage);
+            PublicDatas.Instance.Aggregator.GetEvent<ProgeessEvent>().Subscribe((prgress) =>
+            {
+                try
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        if (prgress <= 0 || prgress >= 100)
+                            progressInfo.Visibility = Visibility.Collapsed;
+                        else
+                            progressInfo.Visibility = Visibility.Visible;
+                        progressBar.Value = prgress;
+                    });
+                }
+                finally
+                {
+                }
+            });
         }
 
         private void Instance_LoadNewPlugins(PluginItem itr)

@@ -4,18 +4,18 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.Composition;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
 using ImageProcessor;
 using ImageProcessor.Imaging.Formats;
+using Prism.Commands;
 using Prism.Mvvm;
 using ToolSetsCore;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using Size = System.Drawing.Size;
-using System.Linq;
-using Prism.Commands;
 
 namespace TextureProcess.ViewModels
 {
@@ -31,6 +31,7 @@ namespace TextureProcess.ViewModels
             base.RegisterCommands();
             ProcessCommand = new DelegateCommand(MultiTexureQualityProcess);
         }
+
         public override void RegisterEvents()
         {
             base.RegisterEvents();
@@ -84,18 +85,34 @@ namespace TextureProcess.ViewModels
         // TODO 并行
         public void MultiTexureQualityProcess()
         {
-
             Logger.LogState("处理图片");
-            var rst = Parallel.ForEach(SelectedFiles.Select(x => x.Filename), TexureQualityProcess);
-            Logger.LogState("处理图片", true);
+            var progressEvent = PublicDatas.Instance.Aggregator.GetEvent<ProgeessEvent>();
+            progressEvent.Publish(0);
+
+            var count = 0;
+            var lst = SelectedFiles.ToList();
+            var fileCount = lst.Count;
+
+            var worker = new BackgroundWorker();
+            worker.DoWork += (sender, e) =>
+            {
+                Parallel.ForEach(lst, x => { TexureQualityProcess(x, () => { progressEvent.Publish(count++ * 100.0 / fileCount); }); });
+            };
+            worker.RunWorkerCompleted += (sender, e) =>
+            {
+                Logger.LogState("处理图片", true);
+                progressEvent.Publish(100);
+            };
+            worker.RunWorkerAsync();
         }
 
         /// <summary>
         ///     图片质量修改
         /// </summary>
         /// <param name="filename"></param>
-        public void TexureQualityProcess(string filename)
+        public void TexureQualityProcess(ProcessFile proc, Action callback)
         {
+            var filename = proc.Filename;
             try
             {
                 if (!File.Exists(filename)) return;
@@ -116,11 +133,14 @@ namespace TextureProcess.ViewModels
                         foramt.Save(path, img.Image, 8);
                     }
                 }
+                proc.Message = "处理完成";
             }
             catch (Exception ex)
             {
-                Logger.Log($"[Process Error] {filename} ---- {ex.Message}");
+                proc.Message = ex.Message;
+                Logger.Log($"[Process Message] {filename} ---- {ex.Message}");
             }
+            callback?.Invoke();
         }
 
         public int Scale(int val)
@@ -150,7 +170,7 @@ namespace TextureProcess.ViewModels
         private void LoadSelectedFiles(IEnumerable<string> filenames)
         {
             if (filenames == null) return;
-            SelectedFiles = new ObservableCollection<ProcessFile>(filenames.Select(x => new ProcessFile { Filename = x, Error = string.Empty }));
+            SelectedFiles = new ObservableCollection<ProcessFile>(filenames.Select(x => new ProcessFile { Filename = x, Message = string.Empty }));
         }
 
         #region SelectedFiles
@@ -180,10 +200,7 @@ namespace TextureProcess.ViewModels
         public string SaveFolder
         {
             get { return _SaveFolder; }
-            set
-            {
-                SetProperty(ref _SaveFolder, value);
-            }
+            set { SetProperty(ref _SaveFolder, value); }
         }
 
         public int Quality
@@ -201,7 +218,7 @@ namespace TextureProcess.ViewModels
 
     public class ProcessFile : BindableBase
     {
-        private string _error = string.Empty;
+        private string _message = "未处理";
         private string _filename = string.Empty;
 
         public string Filename
@@ -210,10 +227,10 @@ namespace TextureProcess.ViewModels
             set { SetProperty(ref _filename, value); }
         }
 
-        public string Error
+        public string Message
         {
-            get { return _error; }
-            set { SetProperty(ref _error, value); }
+            get { return _message; }
+            set { SetProperty(ref _message, value); }
         }
     }
 }

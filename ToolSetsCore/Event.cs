@@ -19,4 +19,9 @@ namespace ToolSetsCore
     public class LogEvent : PubSubEvent<string>
     {
     }
+
+    public class ProgeessEvent : PubSubEvent<double>
+    {
+
+    }
 }

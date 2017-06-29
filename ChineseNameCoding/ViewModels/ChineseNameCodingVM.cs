@@ -61,7 +61,7 @@ namespace ChineseNameCoding.ViewModels
                  }
                  catch (Exception exp)
                  {
-                     record.Error = exp.Message;
+                     record.Message = exp.Message;
                  }
              });
             Logger.LogState("文件重命名", true);
@@ -89,13 +89,14 @@ namespace ChineseNameCoding.ViewModels
                 {
                     var encodingName = PinyinHelper.GetPinyin(record.EncodingName);
                     record.EncodingName = encodingName;
+                    record.Message = "处理成功！";
                 }
                 catch (Exception exp)
                 {
-                    record.Error = exp.Message;
+                    record.Message = exp.Message;
                 }
             });
-            Logger.LogState("文件名中文转拼音",true);
+            Logger.LogState("文件名中文转拼音", true);
         }
 
         private void OpenFolder()
@@ -167,7 +168,8 @@ namespace ChineseNameCoding.ViewModels
         private string _encodingName = string.Empty;
         private string _filePath = string.Empty;
         private string _originalName = string.Empty;
-        private string _error = string.Empty;
+        private string _message = "未处理";
+
 
         public string OriginalName
         {
@@ -187,10 +189,10 @@ namespace ChineseNameCoding.ViewModels
             set { SetProperty(ref _filePath, value); }
         }
 
-        public string Error
+        public string Message
         {
-            get { return _error; }
-            set { SetProperty<string>(ref _error, value); }
+            get { return _message; }
+            set { SetProperty<string>(ref _message, value); }
         }
     }
 }

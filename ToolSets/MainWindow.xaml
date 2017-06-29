@@ -20,6 +20,7 @@
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="35"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <DockPanel>
             <Menu x:Name="menu" DockPanel.Dock="Top" VerticalAlignment="Top" Background="#FFADCAF3" FontSize="16" Padding="5" >
@@ -35,8 +36,14 @@
             <ContentControl regions:RegionManager.RegionName="MainRegion" DockPanel.Dock="Bottom"/>
         </DockPanel>
         <GridSplitter Grid.Row="1" x:Name="gridSplitter" HorizontalAlignment="Stretch" Height="2"  ResizeDirection="Auto" Background="#FF2A2A2B" BorderBrush="Black"/>
-        <Border Grid.Row="2" BorderThickness="1" BorderBrush="#FF0F0F0F" Margin="0,0,0,2" >
-            <TextBox x:Name="tbLog" TextWrapping="Wrap" FontSize="10" MaxLines="30"  VerticalScrollBarVisibility="Visible" AcceptsReturn="True"/>
+        <Border Grid.Row="2" BorderBrush="#FF0F0F0F" Margin="0" >
+            <TextBox x:Name="tbLog" TextWrapping="Wrap" FontSize="10" MaxLines="30"  VerticalScrollBarVisibility="Visible" AcceptsReturn="True" d:LayoutOverrides="LeftPosition, RightPosition, TopPosition, BottomPosition"/>
+        </Border>
+        <Border x:Name="progressInfo" Background="#99060606" Visibility="Collapsed">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Background="White">
+                <TextBlock Text="正在处理..." FontSize="35" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                <ProgressBar x:Name="progressBar" Width="300" Height="30" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </StackPanel>
         </Border>
     </Grid>
 </Window>
