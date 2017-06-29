@@ -59,6 +59,7 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Prism.Wpf.6.3.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
       <Private>True</Private>
@@ -102,8 +103,15 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
+    <None Include="贴图去除中文.ms">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Chinese2Pinyin\Chinese2Pinyin.csproj">
+      <Project>{2406e615-8be0-4e2d-a328-3cdebc268115}</Project>
+      <Name>Chinese2Pinyin</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ToolSetsCore\ToolSetsCore.csproj">
       <Project>{5c7919cd-a2b5-4073-8e3a-323362fe34a9}</Project>
       <Name>ToolSetsCore</Name>

@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolSetsCore", "ToolSetsCor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChineseNameCoding", "ChineseNameCoding\ChineseNameCoding.csproj", "{F9261108-272C-49A2-928B-7AEC03B51091}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chinese2Pinyin", "Chinese2Pinyin\Chinese2Pinyin.csproj", "{2406E615-8BE0-4E2D-A328-3CDEBC268115}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ChineseConverter", "ChineseConverter", "{A88731B5-99B2-4555-A0BC-8A73DA68F919}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,8 +37,16 @@ Global
 		{F9261108-272C-49A2-928B-7AEC03B51091}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F9261108-272C-49A2-928B-7AEC03B51091}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F9261108-272C-49A2-928B-7AEC03B51091}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2406E615-8BE0-4E2D-A328-3CDEBC268115}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2406E615-8BE0-4E2D-A328-3CDEBC268115}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2406E615-8BE0-4E2D-A328-3CDEBC268115}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2406E615-8BE0-4E2D-A328-3CDEBC268115}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F9261108-272C-49A2-928B-7AEC03B51091} = {A88731B5-99B2-4555-A0BC-8A73DA68F919}
+		{2406E615-8BE0-4E2D-A328-3CDEBC268115} = {A88731B5-99B2-4555-A0BC-8A73DA68F919}
 	EndGlobalSection
 EndGlobal

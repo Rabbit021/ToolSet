@@ -9,23 +9,34 @@
         FontFamily="Arial,Microsoft YaHei"
         WindowStartupLocation="CenterScreen" 
         Width="800" Height="600"
-        Title="MainWindow" Background="#FFCDF7C1" >
+        Title="MainWindow" Background="#FFFBFBFB" >
     <Window.Resources>
         <SolidColorBrush x:Key="Menu.Static.Foreground" Color="#FF212121"/>
         <SolidColorBrush x:Key="Menu.Static.Background" Color="#FFF0F0F0"/>
         <SolidColorBrush x:Key="Menu.Static.Border" Color="#FF999999"/>
     </Window.Resources>
-    <DockPanel>
-        <Menu x:Name="menu" DockPanel.Dock="Top" VerticalAlignment="Top" Background="#FFADCAF3" FontSize="16" Padding="5" >
-            <MenuItem Header="文件" >
-                <MenuItem Header="打开文件" Name="openFile" Click="openFile_Click"/>
-                <MenuItem Header="打开文件夹" Name="openFolder" Click="openFolder_Click"/>
-                <MenuItem Header="保存" Name="savefile" Click="savefile_Click"/>
-                <Separator Height="3"/>
-                <MenuItem x:Name="exit" Header="关闭" Click="exit_Click"/>
-            </MenuItem>
-            <MenuItem Header="功能" Name="funitem" />
-        </Menu>
-        <ContentControl regions:RegionManager.RegionName="MainRegion" DockPanel.Dock="Bottom"/>
-    </DockPanel>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="35"/>
+        </Grid.RowDefinitions>
+        <DockPanel>
+            <Menu x:Name="menu" DockPanel.Dock="Top" VerticalAlignment="Top" Background="#FFADCAF3" FontSize="16" Padding="5" >
+                <MenuItem Header="文件" >
+                    <MenuItem Header="打开文件" x:Name="openFile" Click="openFile_Click"/>
+                    <MenuItem Header="打开文件夹" x:Name="openFolder" Click="openFolder_Click"/>
+                    <MenuItem Header="保存" x:Name="savefile" Click="savefile_Click"/>
+                    <Separator Height="3"/>
+                    <MenuItem x:Name="exit" Header="关闭" Click="exit_Click"/>
+                </MenuItem>
+                <MenuItem Header="功能" x:Name="funitem" />
+            </Menu>
+            <ContentControl regions:RegionManager.RegionName="MainRegion" DockPanel.Dock="Bottom"/>
+        </DockPanel>
+        <GridSplitter Grid.Row="1" x:Name="gridSplitter" HorizontalAlignment="Stretch" Height="2"  ResizeDirection="Auto" Background="#FF2A2A2B" BorderBrush="Black"/>
+        <Border Grid.Row="2" BorderThickness="1" BorderBrush="#FF0F0F0F" Margin="0,0,0,2" >
+            <TextBox x:Name="tbLog" TextWrapping="Wrap" FontSize="10" MaxLines="30"  VerticalScrollBarVisibility="Visible" AcceptsReturn="True"/>
+        </Border>
+    </Grid>
 </Window>

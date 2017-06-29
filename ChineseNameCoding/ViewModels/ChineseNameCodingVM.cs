@@ -1,17 +1,21 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Forms;
 using System.Windows.Input;
-using Microsoft.Win32;
+using Chinese2Pinyin;
 using Prism.Commands;
 using Prism.Mvvm;
 using ToolSetsCore;
+using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 
 namespace ChineseNameCoding.ViewModels
 {
@@ -46,16 +50,28 @@ namespace ChineseNameCoding.ViewModels
 
         private void Rename()
         {
-            Parallel.ForEach(Records, record =>
-            {
-                // 重命名
-                File.Move(Path.Combine(record.FilePath, record.OriginalName), Path.Combine(record.FilePath, record.EncodingName));
-                record.OriginalName = record.EncodingName;
-            });
+            Logger.LogState("文件重命名");
+            var rst = Parallel.ForEach(Records, record =>
+             {
+                 try
+                 {
+                     // 重命名
+                     File.Move(Path.Combine(record.FilePath, record.OriginalName), Path.Combine(record.FilePath, record.EncodingName));
+                     record.OriginalName = record.EncodingName;
+                 }
+                 catch (Exception exp)
+                 {
+                     record.Error = exp.Message;
+                 }
+             });
+            Logger.LogState("文件重命名", true);
         }
 
         private void Deconding()
         {
+            Logger.Log("不能够拼音转汉字");
+            return;
+            if (Records == null) return;
             Parallel.ForEach(Records, record =>
             {
                 var originalName = Uri.UnescapeDataString(record.EncodingName);
@@ -65,15 +81,34 @@ namespace ChineseNameCoding.ViewModels
 
         private void Enconding()
         {
+            Logger.LogState("文件名中文转拼音");
+            if (Records == null) return;
             Parallel.ForEach(Records, record =>
             {
-                var encodingName = Uri.EscapeUriString(record.OriginalName);
-                record.EncodingName = encodingName;
+                try
+                {
+                    var encodingName = PinyinHelper.GetPinyin(record.EncodingName);
+                    record.EncodingName = encodingName;
+                }
+                catch (Exception exp)
+                {
+                    record.Error = exp.Message;
+                }
             });
+            Logger.LogState("文件名中文转拼音",true);
         }
 
         private void OpenFolder()
         {
+            using (var fbd = new FolderBrowserDialog())
+            {
+                var result = fbd.ShowDialog();
+                if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
+                {
+                    string[] files = Directory.GetFiles(fbd.SelectedPath, "*", SearchOption.AllDirectories);
+                    LoadRecords(files);
+                }
+            }
         }
 
         private void OpenFile()
@@ -89,12 +124,24 @@ namespace ChineseNameCoding.ViewModels
         {
             var dialog = sender as OpenFileDialog;
             if (dialog != null)
-                Records = new ObservableCollection<CodingRecord>(dialog.FileNames.Select(x => new CodingRecord
-                {
-                    OriginalName = Path.GetFileName(x),
-                    EncodingName = Path.GetFileName(x),
-                    FilePath = Path.GetDirectoryName(x)
-                }));
+                LoadRecords(dialog.FileNames);
+        }
+
+        private void LoadRecords(IEnumerable<string> filenames)
+        {
+            Records = new ObservableCollection<CodingRecord>(filenames.Where(x => IsHasCHZN(x)).Select(x => new CodingRecord
+            {
+                OriginalName = Path.GetFileName(x),
+                EncodingName = Path.GetFileName(x),
+                FilePath = Path.GetDirectoryName(x)
+            }));
+        }
+
+        public static bool IsHasCHZN(string inputData)
+        {
+            var RegCHZN = new Regex("[\u4e00-\u9fa5]");
+            var m = RegCHZN.Match(inputData);
+            return m.Success;
         }
 
         #region Records
@@ -120,6 +167,7 @@ namespace ChineseNameCoding.ViewModels
         private string _encodingName = string.Empty;
         private string _filePath = string.Empty;
         private string _originalName = string.Empty;
+        private string _error = string.Empty;
 
         public string OriginalName
         {
@@ -137,6 +185,12 @@ namespace ChineseNameCoding.ViewModels
         {
             get { return _filePath; }
             set { SetProperty(ref _filePath, value); }
+        }
+
+        public string Error
+        {
+            get { return _error; }
+            set { SetProperty<string>(ref _error, value); }
         }
     }
 }

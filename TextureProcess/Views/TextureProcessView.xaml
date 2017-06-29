@@ -13,27 +13,39 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </toolSetsCore:ToolSetViewBase.Resources>
-    <GroupBox x:Name="groupBox"  Header="图片处理参数设置" BorderBrush="#FF515151" DataContext="{Binding Settings}" FontSize="16" Margin="10">
-        <StackPanel Margin="10">
-            <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Margin="0,0,0,10">
-                <TextBlock Text="保存路径:" TextWrapping="NoWrap"/>
-                <Border Background="Gray" Padding="1" >
-                    <TextBox  MinWidth="350" Text="{Binding SaveFolder,Mode=TwoWay}" FontSize="16" />
-                </Border>
-            </StackPanel>
-            <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Margin="0,0,0,10">
-                <TextBlock TextWrapping="NoWrap">
-                    <Run Text="图片质量"/>
-                    <Run Text="{Binding Quality,StringFormat=({0}):}"/></TextBlock>
-                <Slider Style="{DynamicResource SimpleSlider}" Value="{Binding Quality}" d:LayoutOverrides="LeftPosition, RightPosition" Maximum="100" SmallChange="1" Width="150"/>
-            </StackPanel>
-            <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Margin="0,0,0,10">
-                <TextBlock TextWrapping="NoWrap">
-                    <Run Text="等比降低分辨率"/>
-                    <Run Text="{Binding Resolution,StringFormat=({0}):}"/></TextBlock>
-                <Slider Style="{DynamicResource SimpleSlider}" Value="{Binding Resolution}" d:LayoutOverrides="LeftPosition, RightPosition" Maximum="100" SmallChange="1" Width="150"/>
-            </StackPanel>
+    <Grid Background="White" Margin="5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <StackPanel Height="42" Orientation="Horizontal" Margin="0">
+            <Button Content="处理图片" Width="90" Command="{Binding ProcessCommand}" Margin="0,5"/>
         </StackPanel>
-    </GroupBox>
+        <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding SelectedFiles}" IsReadOnly="True"  MinWidth="200" MinHeight="80" FontSize="16" Grid.Row="1">
+            <DataGrid.Columns>
+                <DataGridTextColumn Width="2.5*" Binding="{Binding Filename}"  Header="图片路径"/>
+                <DataGridTextColumn Width="*" Binding="{Binding Error}"  Header="错误"/>
+            </DataGrid.Columns>
+        </DataGrid>
+        <GroupBox x:Name="groupBox"  Header="图片处理参数设置" BorderBrush="#FF515151" DataContext="{Binding Settings}" FontSize="16" d:LayoutOverrides="Width" Grid.Row="2" Height="150">
+            <StackPanel Margin="10">
+                <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Margin="0,0,0,10">
+                    <TextBlock Text="保存路径:" TextWrapping="NoWrap"/>
+                    <Border Background="Gray" Padding="1" >
+                        <TextBox  MinWidth="350" Text="{Binding SaveFolder, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" FontSize="16"/>
+                    </Border>
+                </StackPanel>
+                <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Margin="0,0,0,10">
+                    <TextBlock TextWrapping="NoWrap"><Run Text="图片质量"/><Run Text=" "/><Run Text="{Binding Quality, StringFormat=(\{0\}):}"/></TextBlock>
+                    <Slider Style="{DynamicResource SimpleSlider}" Value="{Binding Quality}" d:LayoutOverrides="LeftPosition, RightPosition" Maximum="100" SmallChange="1" Width="150"/>
+                </StackPanel>
+                <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Margin="0,0,0,10">
+                    <TextBlock TextWrapping="NoWrap"><Run Text="等比降低分辨率"/><Run Text=" "/><Run Text="{Binding Resolution, StringFormat=(\{0\}):}"/></TextBlock>
+                    <Slider Style="{DynamicResource SimpleSlider}" Value="{Binding Resolution}" d:LayoutOverrides="LeftPosition, RightPosition" Maximum="100" SmallChange="1" Width="150"/>
+                </StackPanel>
+            </StackPanel>
+        </GroupBox>
+    </Grid>
 </toolSetsCore:ToolSetViewBase>
 

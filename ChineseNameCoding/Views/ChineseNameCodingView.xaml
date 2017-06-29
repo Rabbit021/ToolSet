@@ -6,21 +6,22 @@
              xmlns:local="clr-namespace:ChineseNameCoding.Views"
              xmlns:toolSetsCore="clr-namespace:ToolSetsCore;assembly=ToolSetsCore"
              mc:Ignorable="d" >
-    <Grid Background="White">
+    <Grid Background="White" Margin="5">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <StackPanel Height="42" Orientation="Horizontal" Margin="5,0,0,0">
+        <StackPanel Height="42" Orientation="Horizontal" Margin="0">
             <Button Content="编码" Width="90" Margin="0,5" Command="{Binding EncondingCommand}"/>
             <Button Content="解码" Width="90"  Margin="5,5,0,5" Command="{Binding DecondingCommand}"/>
             <Button Content="重命名" Width="90"  Margin="5,5,0,5" Command="{Binding RenameCommand}"/>
         </StackPanel>
-        <DataGrid x:Name="dataGrid" MinWidth="200" MinHeight="80" ItemsSource="{Binding Records}" AutoGenerateColumns="False" FontSize="16" IsReadOnly="True" d:LayoutOverrides="Width, Height" Grid.Row="1" Margin="5" >
+        <DataGrid x:Name="dataGrid" MinWidth="200" MinHeight="80" ItemsSource="{Binding Records}" AutoGenerateColumns="False" FontSize="16" IsReadOnly="True" d:LayoutOverrides="Width, Height" Grid.Row="1" >
             <DataGrid.Columns>
                 <DataGridTextColumn Width="*" Binding="{Binding FilePath}" Header="文件路径" />
                 <DataGridTextColumn Width="*" Binding="{Binding OriginalName}" Header="原始名称"/>
                 <DataGridTextColumn Width="*" Binding="{Binding EncodingName}" Header="编码名称"/>
+                <DataGridTextColumn Width="*" Binding="{Binding Error}"  Header="错误"/>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

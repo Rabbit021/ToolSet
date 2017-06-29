@@ -5,6 +5,7 @@ using System.ComponentModel.Composition;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Microsoft.VisualBasic.Logging;
 using Prism.Events;
 using ToolSetsCore;
 
@@ -38,12 +39,13 @@ namespace ToolSets
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             PublicDatas.Instance.LoadNewPlugins += Instance_LoadNewPlugins;
+            PublicDatas.Instance.Aggregator.GetEvent<LogEvent>().Subscribe(LogMessage);
         }
 
         private void Instance_LoadNewPlugins(PluginItem itr)
         {
             var root = funitem;
-            var fun = new MenuItem { Header = itr.Header, Tag = itr.ViewName};
+            var fun = new MenuItem { Header = itr.Header, Tag = itr.ViewName };
             fun.Click -= Fun_Click;
             fun.Click += Fun_Click;
             root.Items.Add(fun);
@@ -92,6 +94,15 @@ namespace ToolSets
         private void openFolder_Click(object sender, RoutedEventArgs e)
         {
             PublicDatas.Instance.Aggregator.GetEvent<OpenFolderEvent>().Publish();
+        }
+
+        private void LogMessage(string obj)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                tbLog.AppendText(obj);
+                tbLog.ScrollToEnd();
+            });
         }
     }
 }

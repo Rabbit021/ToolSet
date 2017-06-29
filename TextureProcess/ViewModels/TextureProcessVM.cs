@@ -1,14 +1,21 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.Composition;
-using System.Drawing;
 using System.IO;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Forms;
+using System.Windows.Input;
 using ImageProcessor;
 using ImageProcessor.Imaging.Formats;
-using Microsoft.Win32;
 using Prism.Mvvm;
 using ToolSetsCore;
+using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
+using Size = System.Drawing.Size;
+using System.Linq;
+using Prism.Commands;
 
 namespace TextureProcess.ViewModels
 {
@@ -17,6 +24,13 @@ namespace TextureProcess.ViewModels
     {
         public Settings Settings { get; set; } = new Settings();
 
+        public ICommand ProcessCommand { get; set; }
+
+        public override void RegisterCommands()
+        {
+            base.RegisterCommands();
+            ProcessCommand = new DelegateCommand(MultiTexureQualityProcess);
+        }
         public override void RegisterEvents()
         {
             base.RegisterEvents();
@@ -33,13 +47,22 @@ namespace TextureProcess.ViewModels
             PublicDatas.Instance.Aggregator?.GetEvent<OpenFolderEvent>().Subscribe(OpenFolder);
         }
 
-        private void OpenFolder()
-        {
-        }
-
         public void Save()
         {
             Logger.Log("SaveEvent");
+        }
+
+        private void OpenFolder()
+        {
+            using (var fbd = new FolderBrowserDialog())
+            {
+                var result = fbd.ShowDialog();
+                if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
+                {
+                    var files = Directory.GetFiles(fbd.SelectedPath, "*", SearchOption.AllDirectories);
+                    LoadSelectedFiles(files);
+                }
+            }
         }
 
         public void OpenFile()
@@ -55,13 +78,16 @@ namespace TextureProcess.ViewModels
         {
             var dialog = sender as OpenFileDialog;
             if (dialog != null)
-                MultiTexureQualityProcess(dialog.FileNames);
+                LoadSelectedFiles(dialog.FileNames);
         }
 
         // TODO 并行
-        public void MultiTexureQualityProcess(string[] filenames)
+        public void MultiTexureQualityProcess()
         {
-            var rst = Parallel.ForEach(filenames, TexureQualityProcess);
+
+            Logger.LogState("处理图片");
+            var rst = Parallel.ForEach(SelectedFiles.Select(x => x.Filename), TexureQualityProcess);
+            Logger.LogState("处理图片", true);
         }
 
         /// <summary>
@@ -72,6 +98,7 @@ namespace TextureProcess.ViewModels
         {
             try
             {
+                if (!File.Exists(filename)) return;
                 var bytes = File.ReadAllBytes(filename);
                 using (var inStream = new MemoryStream(bytes))
                 {
@@ -102,7 +129,6 @@ namespace TextureProcess.ViewModels
             return Math.Max(rst, 64);
         }
 
-        // KalikoImage
         private ISupportedImageFormat GetImageFormat(string filename)
         {
             var ext = Path.GetExtension(filename) + "".ToLower();
@@ -120,6 +146,29 @@ namespace TextureProcess.ViewModels
             }
             return format;
         }
+
+        private void LoadSelectedFiles(IEnumerable<string> filenames)
+        {
+            if (filenames == null) return;
+            SelectedFiles = new ObservableCollection<ProcessFile>(filenames.Select(x => new ProcessFile { Filename = x, Error = string.Empty }));
+        }
+
+        #region SelectedFiles
+
+        public ObservableCollection<ProcessFile> SelectedFiles
+        {
+            get { return (ObservableCollection<ProcessFile>)GetValue(SelectedFilesProperty); }
+            set { SetValue(SelectedFilesProperty, value); }
+        }
+
+        public static readonly DependencyProperty SelectedFilesProperty =
+            DependencyProperty.Register("SelectedFiles", typeof(ObservableCollection<ProcessFile>), typeof(TextureProcessVM), new PropertyMetadata((sender, e) =>
+            {
+                var vm = sender as TextureProcessVM;
+                if (vm == null) return;
+            }));
+
+        #endregion
     }
 
     public class Settings : BindableBase
@@ -131,7 +180,10 @@ namespace TextureProcess.ViewModels
         public string SaveFolder
         {
             get { return _SaveFolder; }
-            set { SetProperty(ref _SaveFolder, value); }
+            set
+            {
+                SetProperty(ref _SaveFolder, value);
+            }
         }
 
         public int Quality
@@ -144,6 +196,24 @@ namespace TextureProcess.ViewModels
         {
             get { return _resolution; }
             set { SetProperty(ref _resolution, value); }
+        }
+    }
+
+    public class ProcessFile : BindableBase
+    {
+        private string _error = string.Empty;
+        private string _filename = string.Empty;
+
+        public string Filename
+        {
+            get { return _filename; }
+            set { SetProperty(ref _filename, value); }
+        }
+
+        public string Error
+        {
+            get { return _error; }
+            set { SetProperty(ref _error, value); }
         }
     }
 }
