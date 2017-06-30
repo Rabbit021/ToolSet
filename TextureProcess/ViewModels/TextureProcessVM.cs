@@ -37,9 +37,6 @@ namespace TextureProcess.ViewModels
 
         private void SelectSaveFolder()
         {
-            var dlg = new SaveFileDialog();
-            dlg.ShowDialog();
-            return;
             using (var fbd = new FolderBrowserDialog())
             {
                 var result = fbd.ShowDialog();
