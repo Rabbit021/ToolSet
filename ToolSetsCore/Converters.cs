@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Markup;
+using System.Windows.Media;
 
 namespace ToolSetsCore
 {
@@ -33,5 +34,36 @@ namespace ToolSetsCore
         }
 
         #endregion
+    }
+
+    public class State2BrushConvert : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            try
+            {
+                var rst = (int)value;
+                switch (rst)
+                {
+                    case 0:
+                        return Application.Current.FindResource("Normal") as SolidColorBrush;
+                    case 1:
+                        return Application.Current.FindResource("Success") as SolidColorBrush;
+                    case 2:
+                        return Application.Current.FindResource("Failed") as SolidColorBrush;
+                }
+
+            }
+            catch
+            {
+                return new SolidColorBrush(Colors.White);
+            }
+            return new SolidColorBrush(Colors.White);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

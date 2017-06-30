@@ -26,10 +26,26 @@ namespace TextureProcess.ViewModels
 
         public ICommand ProcessCommand { get; set; }
 
+        public ICommand SelectSaveFolderCommand { get; set; }
+
         public override void RegisterCommands()
         {
             base.RegisterCommands();
             ProcessCommand = new DelegateCommand(MultiTexureQualityProcess);
+            SelectSaveFolderCommand = new DelegateCommand(SelectSaveFolder);
+        }
+
+        private void SelectSaveFolder()
+        {
+            var dlg = new SaveFileDialog();
+            dlg.ShowDialog();
+            return;
+            using (var fbd = new FolderBrowserDialog())
+            {
+                var result = fbd.ShowDialog();
+                if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
+                    Settings.SaveFolder = fbd.SelectedPath;
+            }
         }
 
         public override void RegisterEvents()
@@ -94,10 +110,7 @@ namespace TextureProcess.ViewModels
             var fileCount = lst.Count;
 
             var worker = new BackgroundWorker();
-            worker.DoWork += (sender, e) =>
-            {
-                Parallel.ForEach(lst, x => { TexureQualityProcess(x, () => { progressEvent.Publish(count++ * 100.0 / fileCount); }); });
-            };
+            worker.DoWork += (sender, e) => { Parallel.ForEach(lst, x => { TexureQualityProcess(x, () => { progressEvent.Publish(count++ * 100.0 / fileCount); }); }); };
             worker.RunWorkerCompleted += (sender, e) =>
             {
                 Logger.LogState("处理图片", true);
@@ -133,12 +146,11 @@ namespace TextureProcess.ViewModels
                         foramt.Save(path, img.Image, 8);
                     }
                 }
-                proc.Message = "处理完成";
+                proc.SetState(1);
             }
             catch (Exception ex)
             {
-                proc.Message = ex.Message;
-                Logger.Log($"[Process Message] {filename} ---- {ex.Message}");
+                proc.SetState(2, ex);
             }
             callback?.Invoke();
         }
@@ -216,10 +228,17 @@ namespace TextureProcess.ViewModels
         }
     }
 
-    public class ProcessFile : BindableBase
+    public class ProcessFile : BindableBase, IProcessStatus
     {
-        private string _message = "未处理";
         private string _filename = string.Empty;
+        private string _message = "未处理";
+        private int _state; // 0 未处理 1 成功 2，失败
+
+        public int State
+        {
+            get { return _state; }
+            set { SetProperty(ref _state, value); }
+        }
 
         public string Filename
         {
@@ -231,6 +250,34 @@ namespace TextureProcess.ViewModels
         {
             get { return _message; }
             set { SetProperty(ref _message, value); }
+        }
+        public void SetState(int state, Exception exp)
+        {
+            Message = exp.Message;
+            State = 2;
+        }
+
+        public void SetState(int state, string msg)
+        {
+            Message = msg;
+            State = 2;
+        }
+
+        public void SetState(int state)
+        {
+            State = state;
+            switch (state)
+            {
+                case 0:
+                    Message = "未处理";
+                    break;
+                case 1:
+                    Message = "处理成功";
+                    break;
+                case 2:
+                    Message = "处理失败";
+                    break;
+            }
         }
     }
 }

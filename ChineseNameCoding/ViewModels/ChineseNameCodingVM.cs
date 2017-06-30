@@ -5,7 +5,6 @@ using System.ComponentModel;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
@@ -25,6 +24,7 @@ namespace ChineseNameCoding.ViewModels
         public ICommand EncondingCommand { get; set; }
         public ICommand DecondingCommand { get; set; }
         public ICommand RenameCommand { get; set; }
+        protected HashSet<string> UniqueNames { get; set; } = new HashSet<string>();
 
         public override void RegisterEvents()
         {
@@ -52,18 +52,20 @@ namespace ChineseNameCoding.ViewModels
         {
             Logger.LogState("文件重命名");
             var rst = Parallel.ForEach(Records, record =>
-             {
-                 try
-                 {
-                     // 重命名
-                     File.Move(Path.Combine(record.FilePath, record.OriginalName), Path.Combine(record.FilePath, record.EncodingName));
-                     record.OriginalName = record.EncodingName;
-                 }
-                 catch (Exception exp)
-                 {
-                     record.Message = exp.Message;
-                 }
-             });
+            {
+                try
+                {
+                    // 重命名
+                    record.State = 0;
+                    File.Move(Path.Combine(record.FilePath, record.OriginalName), Path.Combine(record.FilePath, record.EncodingName));
+                    record.OriginalName = record.EncodingName;
+                    record.SetState(1);
+                }
+                catch (Exception exp)
+                {
+                    record.SetState(2, exp);
+                }
+            });
             Logger.LogState("文件重命名", true);
         }
 
@@ -82,18 +84,28 @@ namespace ChineseNameCoding.ViewModels
         private void Enconding()
         {
             Logger.LogState("文件名中文转拼音");
+            UniqueNames.Clear();
             if (Records == null) return;
+
             Parallel.ForEach(Records, record =>
             {
                 try
                 {
                     var encodingName = PinyinHelper.GetPinyin(record.EncodingName);
                     record.EncodingName = encodingName;
-                    record.Message = "处理成功！";
+                    if (UniqueNames.Add(Path.Combine(record.FilePath, encodingName)))
+                    {
+                        record.SetState(1);
+                    }
+                    else
+                    {
+                        record.SetState(2, "转拼音后重名！");
+                        Logger.Log($"{Path.Combine(record.FilePath, record.EncodingName)} 转拼音后重名！");
+                    }
                 }
                 catch (Exception exp)
                 {
-                    record.Message = exp.Message;
+                    record.SetState(2, exp);
                 }
             });
             Logger.LogState("文件名中文转拼音", true);
@@ -106,7 +118,7 @@ namespace ChineseNameCoding.ViewModels
                 var result = fbd.ShowDialog();
                 if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
                 {
-                    string[] files = Directory.GetFiles(fbd.SelectedPath, "*", SearchOption.AllDirectories);
+                    var files = Directory.GetFiles(fbd.SelectedPath, "*", SearchOption.AllDirectories);
                     LoadRecords(files);
                 }
             }
@@ -163,13 +175,19 @@ namespace ChineseNameCoding.ViewModels
         #endregion
     }
 
-    public class CodingRecord : BindableBase
+    public class CodingRecord : BindableBase, IProcessStatus
     {
         private string _encodingName = string.Empty;
         private string _filePath = string.Empty;
-        private string _originalName = string.Empty;
         private string _message = "未处理";
+        private string _originalName = string.Empty;
+        private int _state; // 0 未处理 1 成功 2，失败
 
+        public int State
+        {
+            get { return _state; }
+            set { SetProperty(ref _state, value); }
+        }
 
         public string OriginalName
         {
@@ -192,7 +210,36 @@ namespace ChineseNameCoding.ViewModels
         public string Message
         {
             get { return _message; }
-            set { SetProperty<string>(ref _message, value); }
+            set { SetProperty(ref _message, value); }
+        }
+
+        public void SetState(int state, Exception exp)
+        {
+            Message = exp.Message;
+            State = 2;
+        }
+
+        public void SetState(int state, string msg)
+        {
+            Message = msg;
+            State = 2;
+        }
+
+        public void SetState(int state)
+        {
+            State = state;
+            switch (state)
+            {
+                case 0:
+                    Message = "未处理";
+                    break;
+                case 1:
+                    Message = "处理成功";
+                    break;
+                case 2:
+                    Message = "处理失败";
+                    break;
+            }
         }
     }
 }

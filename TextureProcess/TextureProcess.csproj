@@ -87,12 +87,21 @@
       <Name>ToolSetsCore</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\ToolSets\ToolSets.csproj">
+      <Project>{AA179A75-194C-4AB6-9CCA-64B0D03C3BC2}</Project>
+      <Name>ToolSets</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Properties\DesignTimeResources.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <ContainsDesignTimeResources>true</ContainsDesignTimeResources>
+    </Page>
     <Page Include="Views\TextureProcessView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

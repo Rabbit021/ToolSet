@@ -6,8 +6,7 @@
              xmlns:local="clr-namespace:TextureProcess.Views"
              xmlns:toolSetsCore="clr-namespace:ToolSetsCore;assembly=ToolSetsCore"
              mc:Ignorable="d" >
-    <toolSetsCore:ToolSetViewBase.Resources>
-    </toolSetsCore:ToolSetViewBase.Resources>
+    <toolSetsCore:ToolSetViewBase.Resources></toolSetsCore:ToolSetViewBase.Resources>
     <Grid Background="White" Margin="5">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -23,21 +22,24 @@
                 <DataGridTextColumn Width="*" Binding="{Binding Message}"  Header="消息"/>
             </DataGrid.Columns>
         </DataGrid>
-        <GroupBox x:Name="groupBox"  Header="图片处理参数设置" BorderBrush="#FF515151" DataContext="{Binding Settings}" FontSize="16" d:LayoutOverrides="Width" Grid.Row="2" Height="150">
+        <GroupBox x:Name="groupBox"  Header="图片处理参数设置" BorderBrush="#FF515151" FontSize="16" d:LayoutOverrides="Width" Grid.Row="2" Height="150">
             <StackPanel Margin="10">
                 <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Margin="0,0,0,10">
                     <TextBlock Text="保存路径:" TextWrapping="NoWrap"/>
-                    <Border Background="Gray" Padding="1" >
-                        <TextBox  MinWidth="350" Text="{Binding SaveFolder, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" FontSize="16"/>
-                    </Border>
+                    <StackPanel Orientation="Horizontal">
+                        <Border Background="Gray" Padding="1" >
+                            <TextBox  MinWidth="350" Text="{Binding Settings.SaveFolder, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" FontSize="16"/>
+                        </Border>
+                        <Button Margin="5,0,0,0" Width="90" Content="选择路径" Command="{Binding SelectSaveFolderCommand}"/>
+                    </StackPanel>
                 </StackPanel>
                 <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Margin="0,0,0,10">
-                    <TextBlock TextWrapping="NoWrap"><Run Text="图片质量"/><Run Text=" "/><Run Text="{Binding Quality, StringFormat=(\{0\}):}"/></TextBlock>
-                    <Slider  Value="{Binding Quality}" d:LayoutOverrides="LeftPosition, RightPosition" Maximum="100" SmallChange="1" Width="150"/>
+                    <TextBlock TextWrapping="NoWrap"><Run Text="图片质量"/><Run Text=" "/><Run Text="{Binding Settings.Quality, StringFormat=(\{0\}):}"/></TextBlock>
+                    <Slider  Value="{Binding Settings.Quality}" d:LayoutOverrides="LeftPosition, RightPosition" Maximum="100" SmallChange="1" Width="150"/>
                 </StackPanel>
                 <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Margin="0,0,0,10">
-                    <TextBlock TextWrapping="NoWrap"><Run Text="等比降低分辨率"/><Run Text=" "/><Run Text="{Binding Resolution, StringFormat=(\{0\}):}"/></TextBlock>
-                    <Slider  Value="{Binding Resolution}" d:LayoutOverrides="LeftPosition, RightPosition" Maximum="100" SmallChange="1" Width="150"/>
+                    <TextBlock TextWrapping="NoWrap"><Run Text="等比降低分辨率"/><Run Text=" "/><Run Text="{Binding Settings.Resolution, StringFormat=(\{0\}):}"/></TextBlock>
+                    <Slider  Value="{Binding Settings.Resolution}" d:LayoutOverrides="LeftPosition, RightPosition" Maximum="100" SmallChange="1" Width="150"/>
                 </StackPanel>
             </StackPanel>
         </GroupBox>
