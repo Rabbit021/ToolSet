@@ -12,8 +12,8 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <StackPanel Height="42" Orientation="Horizontal" Margin="0">
-            <Button Content="编码" Width="90" Margin="0,5" Command="{Binding EncondingCommand}"/>
-            <Button Content="解码" Width="90"  Margin="5,5,0,5" Command="{Binding DecondingCommand}"/>
+            <Button Content="转拼音" Width="90" Margin="0,5" Command="{Binding EncondingCommand}"/>
+            <Button Content="验证重名" Width="90"  Margin="5,5,0,5" Command="{Binding VaildateNameCommand}"/>
             <Button Content="重命名" Width="90"  Margin="5,5,0,5" Command="{Binding RenameCommand}"/>
         </StackPanel>
         <DataGrid x:Name="dataGrid" AlternationCount="3000000" MinWidth="200" MinHeight="80" ItemsSource="{Binding Records}" AutoGenerateColumns="False" FontSize="16" IsReadOnly="True" d:LayoutOverrides="Width, Height" Grid.Row="1" RowStyle="{DynamicResource StateRowStyle}" >

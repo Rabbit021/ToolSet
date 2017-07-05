@@ -22,7 +22,7 @@ namespace ChineseNameCoding.ViewModels
     public class ChineseNameCodingVM : ToolSetVMBase
     {
         public ICommand EncondingCommand { get; set; }
-        public ICommand DecondingCommand { get; set; }
+        public ICommand VaildateNameCommand { get; set; }
         public ICommand RenameCommand { get; set; }
         protected HashSet<string> UniqueNames { get; set; } = new HashSet<string>();
 
@@ -44,7 +44,7 @@ namespace ChineseNameCoding.ViewModels
         {
             base.RegisterCommands();
             EncondingCommand = new DelegateCommand(Enconding);
-            DecondingCommand = new DelegateCommand(Deconding);
+            VaildateNameCommand = new DelegateCommand(VaildateName);
             RenameCommand = new DelegateCommand(Rename);
         }
 
@@ -69,16 +69,29 @@ namespace ChineseNameCoding.ViewModels
             Logger.LogState("文件重命名", true);
         }
 
-        private void Deconding()
+        private void VaildateName()
         {
-            Logger.Log("不能够拼音转汉字");
-            return;
+            Logger.Log("验证重名");
             if (Records == null) return;
-            Parallel.ForEach(Records, record =>
+            var dict = new Dictionary<string, CodingRecord>();
+            foreach (var record in Records)
             {
-                var originalName = Uri.UnescapeDataString(record.EncodingName);
-                record.EncodingName = originalName;
-            });
+                record.SetState(0);
+                var name = Path.GetFileNameWithoutExtension(record.EncodingName);
+                CodingRecord exist = null;
+                dict.TryGetValue(name, out exist);
+                if (exist == null)
+                {
+                    dict.Add(name, record);
+                    record.SetState(1);
+                }
+                else
+                {
+                    exist.SetState(2);
+                    record.SetState(2);
+                    Logger.Log("[重名：]" + name);
+                }
+            }
         }
 
         private void Enconding()

@@ -133,14 +133,14 @@ namespace TextureProcess.ViewModels
                     using (var factory = new ImageFactory(true))
                     {
                         var img = factory.Load(inStream);
-                        img.Resize(new Size { Width = Scale(factory.Image.Width), Height = Scale(factory.Image.Height) });
-
+                        //img.Resize(new Size { Width = Scale(factory.Image.Width), Height = Scale(factory.Image.Height) });
                         if (!Directory.Exists(Settings.SaveFolder))
                             Directory.CreateDirectory(Settings.SaveFolder);
-                        var foramt = GetImageFormat(filename);
                         var path = Path.Combine(Settings.SaveFolder, Path.GetFileName(filename) + "");
-
-                        foramt.Save(path, img.Image, 8);
+                        var ext = Path.GetExtension(filename) + "".ToLower();
+                        if (ext.Equals(".jpg") || ext.Equals("jpeg"))
+                            img.Quality(Settings.Quality);
+                        img.Save(path);
                     }
                 }
                 proc.SetState(1);
@@ -158,6 +158,7 @@ namespace TextureProcess.ViewModels
             return Math.Max(rst, 64);
         }
 
+        [Obsolete]
         private ISupportedImageFormat GetImageFormat(string filename)
         {
             var ext = Path.GetExtension(filename) + "".ToLower();
@@ -169,7 +170,6 @@ namespace TextureProcess.ViewModels
                     return new JpegFormat { Quality = Settings.Quality };
                 case ".png":
                     return new PngFormat { Quality = Settings.Quality };
-
                 case ".tif":
                     return new TiffFormat { Quality = Settings.Quality };
             }

@@ -37,7 +37,7 @@
                     <TextBlock TextWrapping="NoWrap"><Run Text="图片质量"/><Run Text=" "/><Run Text="{Binding Settings.Quality, StringFormat=(\{0\}):}"/></TextBlock>
                     <Slider  Value="{Binding Settings.Quality}" d:LayoutOverrides="LeftPosition, RightPosition" Maximum="100" SmallChange="1" Width="150"/>
                 </StackPanel>
-                <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Margin="0,0,0,10">
+                <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Margin="0,0,0,10" Visibility="Collapsed">
                     <TextBlock TextWrapping="NoWrap"><Run Text="等比降低分辨率"/><Run Text=" "/><Run Text="{Binding Settings.Resolution, StringFormat=(\{0\}):}"/></TextBlock>
                     <Slider  Value="{Binding Settings.Resolution}" d:LayoutOverrides="LeftPosition, RightPosition" Maximum="100" SmallChange="1" Width="150"/>
                 </StackPanel>
