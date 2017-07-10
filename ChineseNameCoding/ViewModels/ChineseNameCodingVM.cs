@@ -155,7 +155,7 @@ namespace ChineseNameCoding.ViewModels
 
         private void LoadRecords(IEnumerable<string> filenames)
         {
-            Records = new ObservableCollection<CodingRecord>(filenames.Where(x => IsHasCHZN(x)).Select(x => new CodingRecord
+            Records = new ObservableCollection<CodingRecord>(filenames.Select(x => new CodingRecord
             {
                 OriginalName = Path.GetFileName(x),
                 EncodingName = Path.GetFileName(x),

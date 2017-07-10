@@ -58,7 +58,7 @@ namespace TextureProcess.ViewModels
             base.UnRegisterEvents();
             PublicDatas.Instance.Aggregator?.GetEvent<OpenFileEvent>().Unsubscribe(OpenFile);
             PublicDatas.Instance.Aggregator?.GetEvent<SaveEvent>().Unsubscribe(Save);
-            PublicDatas.Instance.Aggregator?.GetEvent<OpenFolderEvent>().Subscribe(OpenFolder);
+            PublicDatas.Instance.Aggregator?.GetEvent<OpenFolderEvent>().Unsubscribe(OpenFolder);
         }
 
         public void Save()
@@ -103,7 +103,7 @@ namespace TextureProcess.ViewModels
             progressEvent.Publish(0);
 
             var count = 0;
-            var lst = SelectedFiles.ToList();
+            var lst = SelectedFiles?.ToList() ?? new List<ProcessFile>();
             var fileCount = lst.Count;
 
             var worker = new BackgroundWorker();
