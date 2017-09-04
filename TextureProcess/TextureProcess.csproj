@@ -87,10 +87,6 @@
       <Name>ToolSetsCore</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\ToolSets\ToolSets.csproj">
-      <Project>{AA179A75-194C-4AB6-9CCA-64B0D03C3BC2}</Project>
-      <Name>ToolSets</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

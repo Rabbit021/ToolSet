@@ -50,4 +50,5 @@
             </Trigger>
         </Style.Triggers>
     </Style>
+    <SolidColorBrush x:Key="BackgroundBrush" Color="White"/>
 </ResourceDictionary>
