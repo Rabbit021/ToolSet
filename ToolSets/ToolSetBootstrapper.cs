@@ -67,11 +67,13 @@ namespace ToolSets
                     }
                     catch
                     {
+                        // ignored
                     }
                 }
             }
             catch
             {
+                // ignored
             }
         }
 

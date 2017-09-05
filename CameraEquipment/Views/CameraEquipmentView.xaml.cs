@@ -26,9 +26,11 @@ namespace CameraEquipment.Views
             InitializeComponent();
         }
 
+        [Import]
         public CameraEquipmentVM ImportVM
         {
             set { VM = value; }
+            get { return VM as CameraEquipmentVM; }
         }
     }
 }
