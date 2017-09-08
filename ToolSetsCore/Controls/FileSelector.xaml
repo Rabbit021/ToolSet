@@ -14,7 +14,7 @@
             <ColumnDefinition Width="32"/>
         </Grid.ColumnDefinitions>
         <TextBlock x:Name="tbHeader" TextWrapping="NoWrap" VerticalAlignment="Center" Text="{Binding Header}"/>
-        <xctk:WatermarkTextBox x:Name="tBfile"   TextWrapping="NoWrap" Text="{Binding MyFile}"  Watermark="选择文件..." VerticalContentAlignment="Center" WatermarkTemplate="{DynamicResource DataTemplate1}" Grid.Column="1"/>
+        <xctk:WatermarkTextBox x:Name="tBfile"   TextWrapping="NoWrap" Text="{Binding MyFile}" Watermark="选择文件..."  VerticalContentAlignment="Center" Grid.Column="1"/>
         <Button Content="..." Grid.Column="2" x:Name="BtnFile" />
     </Grid>
 </UserControl>

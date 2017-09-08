@@ -279,7 +279,8 @@ namespace ToolSetsCore
 
         public static void WriteJArray(string path, JArray jArray)
         {
-
+            var dt = jArray.ToDataTable();
+            WriteDataTable(path, dt);
         }
     }
 }

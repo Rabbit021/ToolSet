@@ -50,7 +50,7 @@ namespace ToolSetsCore.Controls
             DependencyProperty.Register("MyFile", typeof(string), typeof(FileSelector), new PropertyMetadata((sender, e) =>
             {
                 var vm = sender as FileSelector;
-                vm.tBfile.Text = e.NewValue.ToString();
+                vm.tBfile.Text = e.NewValue?.ToString() +"";
             }));
         #endregion
 
@@ -69,7 +69,6 @@ namespace ToolSetsCore.Controls
             }));
         #endregion
 
-
         #region Filter
         public string Filter
         {
@@ -83,6 +82,5 @@ namespace ToolSetsCore.Controls
                  var vm = sender as FileSelector;
              }));
         #endregion
-
     }
 }

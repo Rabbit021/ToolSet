@@ -103,6 +103,7 @@
     <Compile Include="Event.cs" />
     <Compile Include="HelperExtension.cs" />
     <Compile Include="IProcessStatus.cs" />
+    <Compile Include="JsonHelper.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PublicDatas.cs" />
@@ -118,6 +119,11 @@
     <Page Include="Controls\FileSelector.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Properties\DesignTimeResources.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <ContainsDesignTimeResources>true</ContainsDesignTimeResources>
     </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
