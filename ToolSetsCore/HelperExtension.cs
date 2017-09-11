@@ -31,6 +31,33 @@ namespace ToolSetsCore
                 return oraStr;
             }
         }
+
+        public static string ReplaceSpecChar(this string name)
+        {
+            if (string.IsNullOrEmpty(name)) return name;
+            var chars = new Dictionary<string, string>
+            {
+                {" ","" },
+                { "-",""},
+                { "（","("},
+                { "）",")"}
+            };
+            foreach (var itr in chars)
+                name = name.Replace(itr.Key, itr.Value);
+            return name.Trim();
+        }
+
+        public static string RemoveSpecChar(this string name)
+        {
+            if (string.IsNullOrEmpty(name)) return name;
+            var symbol = new[]
+            {
+                " ","-","(",")","（","）"
+            };
+            foreach (var itr in symbol)
+                name = name.Replace(itr, "");
+            return name.Trim();
+        }
     }
 
     public static class Helper

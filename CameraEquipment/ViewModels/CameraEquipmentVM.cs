@@ -35,7 +35,14 @@ namespace CameraEquipment.ViewModels
 
         public Dictionary<string, Channel> Channels { get; set; } = new Dictionary<string, Channel>();
         public Dictionary<string, Channel> Removed { get; set; } = new Dictionary<string, Channel>();
+        public Dictionary<string, CameraInfo> CameraDict { get; set; } = new Dictionary<string, CameraInfo>();
+
         public HashSet<string> DeleteCamera = new HashSet<string>();
+        public HashSet<string> HasViedoCamera = new HashSet<string>();
+
+        public HashSet<string> NoSpecDeleteCamera = new HashSet<string>();
+        public HashSet<string> NoSpecHasViedoCamera = new HashSet<string>();
+
 
         #region DhFile
         public string DhFile
@@ -138,6 +145,7 @@ namespace CameraEquipment.ViewModels
                         {"DVR", itr.Value.DVRGroup.name},
                         {"IP", itr.Value.Ip},
                         {"Num", itr.Value.ChannelNum},
+                        { "Remark",itr.Value.Remark}
                     };
                     lst.Add(obj);
                 }
@@ -169,8 +177,19 @@ namespace CameraEquipment.ViewModels
             foreach (var itr in rst)
             {
                 var name = itr.GetValue<string>("通道名称");
+                var uid = itr.GetValue<string>("唯一标识码");
+
+                if (!string.IsNullOrEmpty(uid))
+                    CameraDict.TryAdd(uid, new CameraInfo { name = name, uid = uid });
                 if (string.IsNullOrEmpty(name)) continue;
-                DeleteCamera.Add(name);
+                DeleteCamera.Add(name.ReplaceSpecChar());
+                NoSpecDeleteCamera.Add(name.ReplaceSpecChar().RemoveSpecChar());
+
+                if (!string.IsNullOrEmpty(uid))
+                {
+                    HasViedoCamera.Add(name.ReplaceSpecChar());
+                    NoSpecHasViedoCamera.Add(name.ReplaceSpecChar().RemoveSpecChar());
+                }
             }
 
             var doc = new XmlDocument();
@@ -248,6 +267,7 @@ namespace CameraEquipment.ViewModels
                         {
                             chn.ChannelName = channel.ChannelName;
                             chn.CameraType = channel.CameraType;
+                            chn.ChannelSN = channel.ChannelSN;
 
                             chn.Ip = ip;
                             chn.ChannelNum = num;
@@ -266,10 +286,12 @@ namespace CameraEquipment.ViewModels
                 rst.ChannelName = node.GetAttribte("name");
                 rst.CameraType = node.GetAttribte("cameraType");
                 rst.ChannelType = node.GetAttribte("channelType");
+                rst.ChannelSN = node.GetAttribte("channelSN");
                 return rst;
             }
             catch (Exception e)
             {
+                Log(e.Message);
                 return rst;
             }
         }
@@ -277,85 +299,133 @@ namespace CameraEquipment.ViewModels
         //  移除已替换的摄像头
         public void RemoveDestoryed()
         {
-
-
             var lst = Channels.Values.ToList();
 
             foreach (var itr in lst)
             {
                 // 移除的Name
-                if (DeleteCamera.Contains(itr.ChannelName))
+                var cname = itr.ChannelName.ReplaceSpecChar();
+                if (DeleteCamera.Contains(cname) && !HasViedoCamera.Contains(cname))
                 {
-                    RemoveChannel(itr.ChannelId);
+                    RemoveChannel(itr.ChannelId, "删除文件匹配");
                 }
+                // 去除特殊字符在删除
+                cname = cname.RemoveSpecChar();
+                if (NoSpecDeleteCamera.Contains(cname) && !NoSpecHasViedoCamera.Contains(cname))
+                {
+                    RemoveChannel(itr.ChannelId, "删除文件匹配，排除特殊字符");
+                }
+
                 // 移除CameraType 空的
                 if (string.IsNullOrEmpty(itr.CameraType))
                 {
-                    RemoveChannel(itr.ChannelId);
+                    RemoveChannel(itr.ChannelId, "删除CameraType为空");
                 }
 
                 // 移除视频分析,解码器,备用
                 if (itr.Building.name.Contains("视频分析") || itr.DVRGroup.name.Contains("解码器") || itr.ChannelName?.Contains("备用") == true)
                 {
-                    RemoveChannel(itr.ChannelId);
+                    RemoveChannel(itr.ChannelId, "删除视屏分析,解码器,备用");
                 }
             }
 
             if (!OnlyFileDel)
             {
-                //去除重名
-                var groups = lst.GroupBy(x => x.ChannelName.NormalizeName());
-                foreach (var group in groups)
+                // 同楼同名删除DVR
+                var building = Channels.Values.ToList().GroupBy(x => x.Building.name);
+                foreach (var itr in building)
                 {
-                    if (group.Count() > 2)
+                    var groups = itr.GroupBy(x => x.ChannelName.NormalizeName());
+                    foreach (var group in groups)
                     {
-                        Log($"{group.Key}重名多余两个");
-                    }
-                    if (group.Count() == 2)
-                    {
-                        var ids = group.Where(x => x.DVRGroup.name.Contains("DVR"))?.Select(x => x.ChannelId)?.ToList();
-                        foreach (var id in ids)
-                        {
-                            RemoveChannel(id);
-                        }
-                    }
-                }
-
-                // 按照末尾数字筛选
-                var numGroups = lst.GroupBy(x => x.ChannelName?.Trim().Split(' ').Last());
-                foreach (var group in numGroups)
-                {
-                    if (string.IsNullOrEmpty(group.Key)) continue;
-
-                    var buildGroups = group.GroupBy(x => x.Building.name.NormalizeName());
-
-                    foreach (var build in buildGroups)
-                    {
-                        if (build.Count() > 2)
+                        if (group.Count() > 2)
                         {
                             Log($"{group.Key}重名多余两个");
                         }
-
-                        if (build.Count() == 2)
+                        var build = group.Select(x => x.Building.name.Trim()).Distinct();
+                        if (group.Count() >= 2 && build.Count() == 1)   // 同一个建筑重名
                         {
-                            var ids = build.Where(x => x.DVRGroup.name.Contains("DVR")).Select(x => x.ChannelId).ToList();
+                            var ids = group.Where(x => x.DVRGroup.name.Contains("DVR"))?.Select(x => x.ChannelId)?.ToList();
                             foreach (var id in ids)
                             {
-                                Removed.TryAdd(id, Channels.TryGetValue(id));
-                                Channels.Remove(id);
+                                RemoveChannel(id, "同楼重名");
                             }
                         }
                     }
                 }
+
+                //// 同楼 末尾数字同名删除DVR
+                //building = Channels.Values.ToList().GroupBy(x => x.Building.name);
+                //foreach (var itr in building)
+                //{
+                //    var numGroups = itr.GroupBy(x => GetDigital(GetLastStr(x.ChannelName)));
+                //    foreach (var group in numGroups)
+                //    {
+                //        if (group.Key < 0) continue;
+                //        var buildGroups = group.GroupBy(x => x.Building.name.NormalizeName());
+                //        if (group.Count() >= 2 && buildGroups.Count() == 1)
+                //        {
+                //            var ids = group.Where(x => x.DVRGroup.name.Contains("DVR")).Select(x => x.ChannelId).ToList();
+                //            foreach (var id in ids)
+                //            {
+                //                // SN 相同
+                //                var rst = Channels.TryGetValue(id);
+                //                if (string.IsNullOrEmpty(rst.ChannelSN))
+                //                {
+                //                    RemoveChannel(id, "同楼,末尾数字重复,SN码空");
+                //                }
+                //                else if (!rst.ChannelName.EndsWith(GetSNCode(rst.ChannelSN)))
+                //                {
+                //                    RemoveChannel(id, "同楼,末尾数字重复,SN不匹配");
+                //                }
+                //            }
+                //        }
+                //    }
+                //}
+            }
+
+            Vailidate();
+        }
+
+        public void Vailidate()
+        {
+            foreach (var itr in Channels)
+            {
+                if (!itr.Value.ChannelName.EndsWith(GetSNCode(itr.Value.ChannelSN))) // 同楼末尾数字重复，但是SN不同
+                    itr.Value.Remark = "SN 结尾不同，注意！";
             }
         }
 
-        private void RemoveChannel(string ChannelId)
+        public string GetSNCode(string str)
         {
-            Removed.TryAdd(ChannelId, Channels.TryGetValue(ChannelId));
-            Channels.Remove(ChannelId);
+            if (string.IsNullOrEmpty(str)) return str;
+            var length = str.Length - 1;
+            var rst = str.Substring(1, length);
+            return int.Parse(rst).ToString();
         }
 
+        private string GetLastStr(string str)
+        {
+            var rst = str?.Trim().Split(' ').Last();
+            return rst;
+        }
+        private int GetDigital(string str)
+        {
+            int rst = -1;
+            if (int.TryParse(str, out rst))
+            {
+                return Math.Abs(rst);
+            }
+            return rst;
+        }
+        private void RemoveChannel(string ChannelId, string log = "")
+        {
+            var channel = Channels.TryGetValue(ChannelId);
+            if (channel == null) return;
+            channel.Remark = log;
+            Removed.TryAdd(ChannelId, channel);
+            Channels.Remove(ChannelId);
+        }
         private void Export(string path, Dictionary<string, Channel> channels)
         {
             if (string.IsNullOrEmpty(path))

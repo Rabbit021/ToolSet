@@ -13,5 +13,7 @@
         public Department Product { get; set; }
         public Department Building { get; set; }
         public Department DVRGroup { get; set; }
+        public string Remark { get; set; } = "";
+        public string ChannelSN { get; set; }
     }
 }

@@ -151,6 +151,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="ViewModels\CameraEquipmentVM.cs" />
+    <Compile Include="ViewModels\CameraInfo.cs" />
     <Compile Include="Views\CameraEquipmentView.xaml.cs">
       <DependentUpon>CameraEquipmentView.xaml</DependentUpon>
     </Compile>
