@@ -123,25 +123,30 @@ namespace TextureProcess.ViewModels
         public void TexureQualityProcess(ProcessFile proc, Action callback)
         {
             var filename = proc.Filename;
+            var path = Path.Combine(Settings.SaveFolder, Path.GetFileName(filename) + "");
+            var ext = Path.GetExtension(filename) + "".ToLower();
+            if (!Directory.Exists(Settings.SaveFolder))
+                Directory.CreateDirectory(Settings.SaveFolder);
             try
             {
-                if (!File.Exists(filename)) return;
-                var bytes = File.ReadAllBytes(filename);
-                using (var inStream = new MemoryStream(bytes))
+                if (!File.Exists(filename))
+                    return;
+                if (ext.Equals(".jpg") || ext.Equals("jpeg"))
                 {
-                    // Image Process
-                    using (var factory = new ImageFactory(true))
+                    var bytes = File.ReadAllBytes(filename);
+                    using (var inStream = new MemoryStream(bytes))
                     {
-                        var img = factory.Load(inStream);
-                        //img.Resize(new Size { Width = Scale(factory.Image.Width), Height = Scale(factory.Image.Height) });
-                        if (!Directory.Exists(Settings.SaveFolder))
-                            Directory.CreateDirectory(Settings.SaveFolder);
-                        var path = Path.Combine(Settings.SaveFolder, Path.GetFileName(filename) + "");
-                        var ext = Path.GetExtension(filename) + "".ToLower();
-                        if (ext.Equals(".jpg") || ext.Equals("jpeg"))
+                        using (var factory = new ImageFactory(true))
+                        {
+                            var img = factory.Load(inStream);
                             img.Quality(Settings.Quality);
-                        img.Save(path);
+                            img.Save(path);
+                        }
                     }
+                }
+                else
+                {
+                    File.Copy(filename, path, true);
                 }
                 proc.SetState(1);
             }

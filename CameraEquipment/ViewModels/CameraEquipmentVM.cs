@@ -37,6 +37,7 @@ namespace CameraEquipment.ViewModels
         public Dictionary<string, Channel> Removed { get; set; } = new Dictionary<string, Channel>();
         public Dictionary<string, CameraInfo> CameraDict { get; set; } = new Dictionary<string, CameraInfo>();
 
+        public HashSet<string> SphereCamera = new HashSet<string>();
         public HashSet<string> DeleteCamera = new HashSet<string>();
         public HashSet<string> HasViedoCamera = new HashSet<string>();
 
@@ -100,6 +101,20 @@ namespace CameraEquipment.ViewModels
             }));
         #endregion
 
+        #region ControlFile
+        public string ControlFile
+        {
+            get { return (string)GetValue(ControlFileProperty); }
+            set { SetValue(ControlFileProperty, value); }
+        }
+
+        public static readonly DependencyProperty ControlFileProperty =
+            DependencyProperty.Register("ControlFile", typeof(string), typeof(CameraEquipmentVM), new PropertyMetadata((sender, e) =>
+            {
+                var vm = sender as CameraEquipmentVM;
+            }));
+        #endregion
+
         #region OnlyFileDel 使用文件限制删除
         public bool OnlyFileDel
         {
@@ -112,6 +127,20 @@ namespace CameraEquipment.ViewModels
              {
                  var vm = sender as CameraEquipmentVM;
              }));
+        #endregion
+
+        #region CameraGroupFile
+        public string CameraGroupFile
+        {
+            get { return (string)GetValue(CameraGroupFileProperty); }
+            set { SetValue(CameraGroupFileProperty, value); }
+        }
+
+        public static readonly DependencyProperty CameraGroupFileProperty =
+            DependencyProperty.Register("CameraGroupFile", typeof(string), typeof(CameraEquipmentVM), new PropertyMetadata((sender, e) =>
+            {
+                var vm = sender as CameraEquipmentVM;
+            }));
         #endregion
 
         // 导出转换后的DH文件
@@ -464,6 +493,16 @@ namespace CameraEquipment.ViewModels
                     Log("OldCameraFile或FilledChannelFile 不存在");
                     return;
                 }
+
+                if (File.Exists(ControlFile))
+                {
+                    var array = LoadJarrayFile(ControlFile);
+                    foreach (var itr in array)
+                    {
+                        SphereCamera.Add(itr.GetValue<string>("c_channel"));
+                    }
+                }
+
                 var cameras = LoadJarrayFile(OldCameraFile);
                 var filed = LoadJarrayFile(FilledChannelFile);
 
@@ -476,6 +515,8 @@ namespace CameraEquipment.ViewModels
                     dt.Rows.Add(row);
                     jr.Add(ToJObject(itr, cameras));
                 }
+
+
                 var dname = Path.ChangeExtension(OldCameraFile, ".xlsx");
                 dname = ExcelHelper.GetSaveFilePath(dname);
                 if (!string.IsNullOrEmpty(dname))
@@ -484,6 +525,9 @@ namespace CameraEquipment.ViewModels
                     File.WriteAllText(jsonpath, jr.ToString());
                 }
                 ExcelHelper.WriteDataTable(dname, dt);
+
+                // TODO 导出模型匹配结果
+                UpgradeCameraGroup(jr);
             }
             catch (Exception ex)
             {
@@ -558,7 +602,7 @@ namespace CameraEquipment.ViewModels
             row.AddValue2Row("c_building_id", itr.GetValue<string>("buildingId"));
             row.AddValue2Row("c_storey_id", itr.GetValue<string>("storeyId"));
             row.AddValue2Row("AlarmLimit", "22:00-7:00");
-            row.AddValue2Row("CanControl", "false");
+            row.AddValue2Row("CanControl", SphereCamera.Contains(row["c_channel"] + ""));
             row.AddValue2Row("pointLocation", itr.SelectToken("pointLocation").ToString());
 
             return row;
@@ -589,6 +633,26 @@ namespace CameraEquipment.ViewModels
                 return token as JArray;
             }
         }
+        #endregion
+
+        #region  更新摄像头分组
+
+        public void UpgradeCameraGroup(JArray jr)
+        {
+            if (File.Exists(ControlFile)) return;
+            var group = LoadJarrayFile(CameraGroupFile);
+            var cameraIds = jr.Select(x => x.GetValue<string>("c_id")).ToArray();
+            for (var i = 0; i < group.Count; i++)
+            {
+                var itr = group[i];
+                var id = itr.GetValue<string>("c_camera_id");
+                if (!cameraIds.Contains(id))
+                    group.Remove(itr);
+            }
+            var path = ExcelHelper.GetSaveFilePath();
+            ExcelHelper.WriteJArray(path, group);
+        }
+
         #endregion
 
         public void Log(string msg)

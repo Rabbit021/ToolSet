@@ -32,6 +32,14 @@
                 <TextBlock Text="选择t_soho_camera_equipment_5700000001.json"/>
                 <Controls:FileSelector HorizontalAlignment="Left" Height="32" VerticalAlignment="Top" Width="600" Header="" Filter="json(*.json)|*.json" MyFile="{Binding OldCameraFile,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
             </StackPanel>
+            <StackPanel Orientation="Vertical" Margin="10">
+                <TextBlock Text="选择摄像头控制文件,SphereCamera.json"/>
+                <Controls:FileSelector HorizontalAlignment="Left" Height="32" VerticalAlignment="Top" Width="600" Header="" Filter="json(*.json)|*.json" MyFile="{Binding ControlFile,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
+            </StackPanel>
+            <StackPanel Orientation="Vertical" Margin="10">
+                <TextBlock Text="选择摄像头分组文件,t_soho_camera_group_rel.json"/>
+                <Controls:FileSelector HorizontalAlignment="Left" Height="32" VerticalAlignment="Top" Width="600" Header="" Filter="json(*.json)|*.json" MyFile="{Binding CameraGroupFile,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
+            </StackPanel>
             <Button Content="更新" Style="{DynamicResource DefaultButtonStyle}" HorizontalAlignment="Left" Command="{Binding UpdateCommand}" Margin="10,0,0,0"/>
         </StackPanel>
     </StackPanel>
