@@ -60,28 +60,6 @@ namespace ToolSetsCore
         }
     }
 
-    public static class Helper
-    {
-        public static T GetValue<T>(this JToken token, string name)
-        {
-            if (string.IsNullOrEmpty(name))
-                throw new Exception("GetValue name is empty");
-            try
-            {
-                var tk = token?.SelectToken(name);
-                if (tk == null)
-                    return default(T);
-                return tk.Value<T>();
-            }
-            catch
-            {
-
-                return default(T);
-            }
-        }
-
-    }
-
     public static class XmlExtension
     {
         private static Dictionary<string, string> SpecCharacters;

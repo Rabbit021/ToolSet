@@ -60,8 +60,8 @@
       <HintPath>..\packages\Prism.Wpf.6.3.0\lib\net45\Prism.Wpf.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="SqlSugar, Version=4.5.1.5, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\sqlSugar.4.5.1.5\lib\SqlSugar.dll</HintPath>
+    <Reference Include="SqlSugar, Version=4.6.4.5, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\sqlSugar.4.6.4.5\lib\SqlSugar.dll</HintPath>
     </Reference>
     <Reference Include="System">
       <Private>False</Private>

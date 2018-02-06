@@ -31,6 +31,7 @@ namespace UdpTester.Views
         {
             InitializeComponent();
             this.Loaded += UdpTesterView_Loaded;
+            this.Unloaded += UdpTesterView_Unloaded;
             this.sender.Click += Sender_Click;
             this.btnRefresh.Click += BtnRefresh_Click;
             this.DataContext = this;
@@ -47,11 +48,35 @@ namespace UdpTester.Views
 
         private void UdpTesterView_Loaded(object sender, RoutedEventArgs e)
         {
+
+            StartUdp();
+
+        }
+        private void UdpTesterView_Unloaded(object sender, RoutedEventArgs e)
+        {
+            QuitUdp();
+        }
+
+        public void StartUdp()
+        {
             try
             {
+                iSagyUdpServer.Instance.ProcessEvent -= Instance_ProcessEvent;
                 iSagyUdpServer.Instance.ProcessEvent += Instance_ProcessEvent;
                 iSagyUdpServer.Instance.DefaultSetup();
                 iSagyUdpServer.Instance.Start();
+            }
+            catch (Exception exception)
+            {
+                Logger.Log(exception.StackTrace);
+            }
+        }
+
+        public void QuitUdp()
+        {
+            try
+            {
+                iSagyUdpServer.Instance.Quit();
             }
             catch (Exception exception)
             {
