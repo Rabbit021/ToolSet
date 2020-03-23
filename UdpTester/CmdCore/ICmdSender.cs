@@ -70,5 +70,26 @@ namespace UdpTester.CmdCore
             }
         }
 
+        public static IClientCmdInfo AddCmdParams(this IClientCmdInfo cmd, IDictionary<string, object> parameters)
+        {
+            try
+            {
+                cmd.CmdParams = cmd.CmdParams ?? new JArray();
+                foreach (var itr in parameters)
+                {
+                    cmd.CmdParams.Add(new JObject
+                    {
+                        {"PKey", JToken.FromObject( itr.Key)},
+                        {"PValue", JToken.FromObject(itr.Value)}
+                    });
+                }
+                return cmd;
+
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+        }
     }
 }

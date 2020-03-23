@@ -42,6 +42,7 @@
             </StackPanel>
             <Button Content="更新" Style="{DynamicResource DefaultButtonStyle}" HorizontalAlignment="Left" Command="{Binding UpdateCommand}" Margin="10,0,0,0"/>
         </StackPanel>
+        <TextBlock x:Name="textBlock" TextWrapping="Wrap" Text="TextBlock" Foreground="{DynamicResource Red}"/>
     </StackPanel>
 </toolSetsCore:ToolSetViewBase>
 

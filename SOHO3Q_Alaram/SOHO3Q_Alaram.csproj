@@ -81,8 +81,10 @@
   <ItemGroup>
     <Compile Include="DbContextBase.cs" />
     <Compile Include="Models\entrancedevice.cs" />
+    <Compile Include="Models\soho_device.cs" />
     <Compile Include="Models\soho_zone.cs" />
     <Compile Include="SOHO3QAlaramModule.cs" />
+    <Compile Include="ViewModels\AlarmVM.cs" />
     <Compile Include="Views\AlarmView.xaml.cs">
       <DependentUpon>AlarmView.xaml</DependentUpon>
     </Compile>
@@ -104,7 +106,9 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="app.config" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -116,9 +120,7 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ViewModels\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\ToolSetsCore\ToolSetsCore.csproj">
       <Project>{5c7919cd-a2b5-4073-8e3a-323362fe34a9}</Project>

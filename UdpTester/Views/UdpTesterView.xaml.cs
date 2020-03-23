@@ -34,8 +34,14 @@ namespace UdpTester.Views
             this.Unloaded += UdpTesterView_Unloaded;
             this.sender.Click += Sender_Click;
             this.btnRefresh.Click += BtnRefresh_Click;
+            this.UseCompress.Click += UseCompress_Click;
             this.DataContext = this;
             this.cmdLsb.SelectionChanged += CmdLsb_SelectionChanged;
+        }
+
+        private void UseCompress_Click(object sender, RoutedEventArgs e)
+        {
+            iSagyUdpServer.Instance.UseCompress = (bool)UseCompress.IsChecked;
         }
 
         private void CmdLsb_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
@@ -111,6 +117,9 @@ namespace UdpTester.Views
                 var cmd = this.msg.Text;
                 var token = JToken.Parse(cmd);
                 ClientCmdInfo[] cmds = null;
+                var dict = new Dictionary<string, object>();
+                dict.Add("Sender", "Touch");
+
                 switch (token.Type)
                 {
                     case JTokenType.Array:
@@ -118,21 +127,29 @@ namespace UdpTester.Views
                         foreach (var itr in cmds)
                         {
                             itr.SetTime(Environment.TickCount);
+                            itr.AddCmdParams(dict);
                         }
                         break;
                     case JTokenType.Object:
                         var client = token.ToObject<ClientCmdInfo>();
                         client.SetTime(Environment.TickCount);
+                        client.AddCmdParams(dict);
                         cmds = new ClientCmdInfo[]
                         {
                             client
                         };
                         break;
-                    default:
-                        Logger.Log("命令不符合格式");
-                        return;
                 }
-                var cmdstr = JToken.FromObject(cmds).ToString(Newtonsoft.Json.Formatting.None);
+
+                var cmdstr = cmd;
+                if (cmds != null)
+                {
+                    cmdstr = JToken.FromObject(cmds).ToString(Newtonsoft.Json.Formatting.None);
+                }
+                else
+                {
+                    cmdstr = cmd;
+                }
                 iSagyUdpServer.Instance.SendMsg(cmdstr);
             }
             catch (Exception exception)

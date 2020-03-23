@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -38,9 +39,8 @@ namespace iSagyUdpLib
 
 
         #endregion
-
+        public bool UseCompress = true;
         int ReceivePort { get; set; }
-        int PadPort { get; set; }
         bool IsQuiting { get; set; }
         UdpClient UdpReceiver { get; set; }
 
@@ -70,7 +70,8 @@ namespace iSagyUdpLib
             try
             {
                 byte[] recvData = u.EndReceive(result, ref senderIPEndPoint);
-                this.UdpPacketReceived(recvData);
+                UdpPacketReceived(recvData);
+
             }
             catch (Exception exp)
             {
@@ -123,21 +124,32 @@ namespace iSagyUdpLib
             this.ProcessCmd(str);
         }
 
+        public static byte[] ReadFully(Stream input)
+        {
+            byte[] buffer = new byte[16 * 1024];
+            using (MemoryStream ms = new MemoryStream())
+            {
+                int read;
+                while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    ms.Write(buffer, 0, read);
+                }
+                return ms.ToArray();
+            }
+        }
+
         #region iSagyCommunication
 
         public void DefaultSetup()
         {
-            Setup(int.Parse(ConfigurationManager.AppSettings["ReceivePort"]),
-                  int.Parse(ConfigurationManager.AppSettings["PadPort"]),
-                  ConfigurationManager.AppSettings["U3dIpEndPoint"]);
+            Setup(int.Parse(ConfigurationManager.AppSettings["ReceivePort"]), ConfigurationManager.AppSettings["U3dIpEndPoint"]);
         }
 
-        public void Setup(int receivePort, int padPort, string ip)
+        public void Setup(int receivePort, string ip)
         {
             this.ReceivePort = receivePort;
-            this.PadPort = padPort;
             var strU3dIpEndPoint = ip.Replace("localhost", "127.0.0.1").Split(':');
-            this.U3dIpEndPoint = new IPEndPoint(IPAddress.Parse(strU3dIpEndPoint[0]), int.Parse(strU3dIpEndPoint[1]));
+            U3dIpEndPoint = new IPEndPoint(IPAddress.Parse(strU3dIpEndPoint[0]), int.Parse(strU3dIpEndPoint[1]));
         }
 
         public void Start()
@@ -149,8 +161,16 @@ namespace iSagyUdpLib
         public event Action<IClientCmdInfo[]> ProcessEvent;
         public void ProcessCmd(string cmd)
         {
-            var cmds = JArray.Parse(cmd).ToObject<ClientCmdInfo[]>();
-            ProcessEvent?.Invoke(cmds);
+            try
+            {
+                Logger.Log(cmd);
+                var cmds = JArray.Parse(cmd).ToObject<ClientCmdInfo[]>();
+                ProcessEvent?.Invoke(cmds);
+            }
+            catch (Exception exp)
+            {
+                Logger.Log("ProcessCmd Error:" + exp.Message);
+            }
         }
 
         public void SendMsg(string sendMsg)
@@ -188,6 +208,11 @@ namespace iSagyUdpLib
                 foreach (UdpPacket udpPacket in listPacket)
                 {
                     var bytes = udpPacket.ToArray();
+                    var rst = string.Empty;
+                    for (int i = 0; i < 5; i++)
+                    {
+                        rst += " " + X2String(bytes.Skip(i * 4).Take(4).ToArray());
+                    }
                     UdpReceiver.Client.SendTo(bytes, 0, bytes.Length, SocketFlags.None, dstPt);
                 }
             }
@@ -214,26 +239,39 @@ namespace iSagyUdpLib
 
         #endregion
 
+        public string X2String(byte[] bytes)
+        {
+            var strB = new StringBuilder();
+            for (int i = 0; i < bytes.Length; i++)
+                strB.Append(bytes[i].ToString("X2"));
+            var hexString = strB.ToString();
+            return hexString;
+        }
+
         #region LZ4 解压缩
         public byte[] Compress(string str)
         {
             var datas = Encoding.UTF8.GetBytes(str);
-            var rst = LZ4Codec.WrapHC(datas, 0, datas.Length);
+            var rst = datas;
+            if (UseCompress)
+                rst = LZ4Codec.WrapHC(datas, 0, datas.Length);
             return rst;
         }
         public string DeCompress(byte[] datas)
         {
-            var unCopress = LZ4Codec.Unwrap(datas);
+            var unCopress = datas;
+            if (UseCompress)
+                unCopress = LZ4Codec.Unwrap(datas);
             return Encoding.UTF8.GetString(unCopress);
         }
 
         #endregion
     }
+
     public class UdpPacket
     {
         public const int ChunkLength = 4096;        //分割块的长度
         static int CurrentSequence = 0;
-
         public int Sequence { get; set; }     //所属组的唯一序列号 包编号  
         public int Index { get; set; }        //消息包的索引  
         public int Total { get; set; }        //分包总数  
