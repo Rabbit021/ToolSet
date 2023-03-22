@@ -34,7 +34,7 @@ namespace ToolSetsCore
         }
 
         //只激发同源的VM View与VM名称是否相同,避免多次激发Loaded事件
-        bool IsSameSource
+        private bool IsSameSource
         {
             get
             {

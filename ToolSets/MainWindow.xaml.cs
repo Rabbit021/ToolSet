@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Composition;
+using System.Net;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -37,6 +38,7 @@ namespace ToolSets
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
+
             PublicDatas.Instance.LoadNewPlugins += Instance_LoadNewPlugins;
             PublicDatas.Instance.Aggregator.GetEvent<LogEvent>().Subscribe(LogMessage);
             PublicDatas.Instance.Aggregator.GetEvent<ProgeessEvent>().Subscribe((prgress) =>
@@ -72,7 +74,10 @@ namespace ToolSets
             var item = (sender as MenuItem);
             var tag = item?.Tag + "";
             if (string.IsNullOrEmpty(tag)) return;
-            VM?.RegionManager.RequestNavigate(Constants.MainRegionName, tag);
+            VM?.RegionManager.RequestNavigate(Constants.MainRegionName, tag, (rst) =>
+            {
+
+            });
         }
 
         private void MainWindow_Unloaded(object sender, RoutedEventArgs e)

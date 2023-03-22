@@ -1,0 +1,20 @@
+﻿<UserControl
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ToolSetsCore.Controls"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" x:Class="ToolSetsCore.Controls.FileSelector"
+             mc:Ignorable="d" 
+             d:DesignHeight="32" d:DesignWidth="200">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="32"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock x:Name="tbHeader" TextWrapping="NoWrap" VerticalAlignment="Center" Text="{Binding Header}"/>
+        <xctk:WatermarkTextBox x:Name="tBfile"   TextWrapping="NoWrap" Text="{Binding MyFile}" Watermark="选择文件..."  VerticalContentAlignment="Center" Grid.Column="1"/>
+        <Button Content="..." Grid.Column="2" x:Name="BtnFile" />
+    </Grid>
+</UserControl>

@@ -1,9 +1,12 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Windows;
 using System.Windows.Markup;
 using Prism.Mef;
 using System.ComponentModel.Composition.Hosting;
 using System.Configuration;
+using System.Reflection;
+using System.Resources;
 
 namespace ToolSets
 {
@@ -31,7 +34,9 @@ namespace ToolSets
             base.ConfigureAggregateCatalog();
             this.AggregateCatalog.Catalogs.Add(new AssemblyCatalog(typeof(MainWindow).Assembly));
             this.LoadCatalogs();
-            this.LoadStyles("ToolSetTheme");
+
+            Application.Current.Resources.MergedDictionaries.Clear();
+            LoadTheme("ToolSetTheme");
         }
 
         void LoadCatalogs()
@@ -48,13 +53,32 @@ namespace ToolSets
             }
         }
 
-        void LoadStyles(string dirPath)
+        void LoadTheme(string dirPath)
+        {
+            Application.Current.Resources.MergedDictionaries.Clear();
+            LoadStylesFromAssembly("ToolSetTheme");
+            LoadStylesFromXaml("ToolSetTheme");
+        }
+
+        void LoadStylesFromAssembly(string dirPath)
+        {
+            if (!Directory.Exists(dirPath)) return;
+            var files = Directory.GetFiles(dirPath, "*.dll");
+            foreach (var file in files)
+            {
+                var assembly = Assembly.LoadFrom(file);
+                var uri1 = string.Format("pack://application:,,,/{0};Component/Resources.xaml", assembly.GetName().Name);
+                var resourceDictionary = new ResourceDictionary { Source = new Uri(uri1) };
+                Application.Current.Resources.MergedDictionaries.Add(resourceDictionary);
+            }
+        }
+
+        void LoadStylesFromXaml(string dirPath)
         {
             try
             {
                 if (!Directory.Exists(dirPath)) return;
                 var files = Directory.GetFiles(dirPath, "*.xaml");
-                Application.Current.Resources.MergedDictionaries.Clear();
                 foreach (var file in files)
                 {
                     try
@@ -67,11 +91,13 @@ namespace ToolSets
                     }
                     catch
                     {
+                        // ignored
                     }
                 }
             }
             catch
             {
+                // ignored
             }
         }
 

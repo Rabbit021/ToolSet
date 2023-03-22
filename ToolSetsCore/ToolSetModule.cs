@@ -25,7 +25,7 @@ namespace ToolSetsCore
         public virtual void RegisterPlugins()
         {
         }
-
+         
         public virtual void RegisterEvents()
         {
         }
@@ -33,6 +33,5 @@ namespace ToolSetsCore
         public virtual void RaiseInitEvents()
         {
         }
-
     }
 }

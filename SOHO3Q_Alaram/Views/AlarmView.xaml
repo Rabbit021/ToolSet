@@ -1,0 +1,72 @@
+﻿<toolSetsCore:ToolSetViewBase x:Class="SOHO3Q_Alaram.AlarmView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SOHO3Q_Alaram"
+             xmlns:toolSetsCore="clr-namespace:ToolSetsCore;assembly=ToolSetsCore"
+             mc:Ignorable="d" >
+    <UserControl.Resources>
+    </UserControl.Resources>
+    <Grid HorizontalAlignment="Left" VerticalAlignment="Top">
+        <TabControl>
+            <TabItem Header="报警点位更新">
+                <Grid Background="#FFE5E5E5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Orientation="Vertical">
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5" Height="24">
+                            <TextBlock Text="地址:" Margin="0,0,10,0" Width="45"/>
+                            <TextBox x:Name="server" Text="{Binding Host,Mode=TwoWay}" Width="250" VerticalContentAlignment="Center"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5" Height="24">
+                            <TextBlock Margin="0,0,10,0" Text="端口:" Width="45"/>
+                            <TextBox x:Name="port" Text="{Binding Port,Mode=TwoWay}"  Width="250" VerticalContentAlignment="Center"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5" Height="24">
+                            <TextBlock Margin="0,0,10,0" Width="45"><Run Text="数据库："/></TextBlock>
+                            <TextBox  x:Name="database" Text="{Binding database,Mode=TwoWay}" Width="250" VerticalContentAlignment="Center"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5" Height="24">
+                            <TextBlock Margin="0,0,10,0" Width="45"><Run Text="用户"/><Run Text=":"/></TextBlock>
+                            <TextBox  x:Name="Uid" Text="{Binding Uid,Mode=TwoWay}" Width="250" VerticalContentAlignment="Center"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5" Height="24">
+                            <TextBlock Margin="0,0,10,0" Width="45"><Run Text="密码"/><Run Text=":"/></TextBlock>
+                            <TextBox  x:Name="pwd" Text="{Binding pwd,Mode=TwoWay}" Width="250" VerticalContentAlignment="Center"/>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" Grid.Row="1">
+                        <StackPanel Margin="0" Orientation="Vertical">
+                            <Button  x:Name="btnUpdate" Content="门禁区域关系" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120" Height="24" Command="{Binding UpdateEntraceCommand}"/>
+                        </StackPanel>
+                        <StackPanel Margin="0" Orientation="Vertical">
+                            <Button Content="依据模型名称更新门禁区域关系" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120" Height="24" Command="{Binding UpdateEntraceZoneIdCommand}"/>
+                        </StackPanel>
+                        <StackPanel Margin="0" Orientation="Vertical">
+                            <Button   Content="环境照明和区域的对应关系" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120" Height="24" Command="{Binding UpdateDeviceCommand}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+            <TabItem Header="生成实体类">
+                <DataGrid x:Name="dataGrid">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Header="表名" >
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <TextBox />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</toolSetsCore:ToolSetViewBase>
+

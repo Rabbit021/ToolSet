@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TextureProcess</RootNamespace>
     <AssemblyName>TextureProcess</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -86,10 +86,6 @@
       <Project>{5c7919cd-a2b5-4073-8e3a-323362fe34a9}</Project>
       <Name>ToolSetsCore</Name>
       <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\ToolSets\ToolSets.csproj">
-      <Project>{AA179A75-194C-4AB6-9CCA-64B0D03C3BC2}</Project>
-      <Name>ToolSets</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
